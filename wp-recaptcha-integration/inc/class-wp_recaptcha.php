@@ -537,7 +537,7 @@ class WP_reCaptcha {
 		if ( is_null( $key ) )
 			$key = $this->get_option('recaptcha_publickey');
 		$rec = WP_reCaptcha::instance();
-		$pub_key_url = sprintf( "http://www.google.com/recaptcha/api/challenge?k=%s" , $key );
+		$pub_key_url = sprintf( "https://www.google.com/recaptcha/api/challenge?k=%s" , $key );
 		$pub_response = wp_remote_get( $pub_key_url );
 		$pub_response_body = wp_remote_retrieve_body( $pub_response );
 		return ! is_wp_error( $pub_response ) && ! strpos( $pub_response_body ,'Format of site key was invalid');
@@ -551,7 +551,7 @@ class WP_reCaptcha {
 	public function test_private_key( $key = null ) {
 		if ( is_null( $key ) )
 			$key = $this->get_option('recaptcha_privatekey');
-		$prv_key_url = sprintf( "http://www.google.com/recaptcha/api/verify?privatekey=%s" , $key );
+		$prv_key_url = sprintf( "https://www.google.com/recaptcha/api/verify?privatekey=%s" , $key );
 		$prv_response = wp_remote_get( $prv_key_url );
 		$prv_rspbody = wp_remote_retrieve_body( $prv_response );
 		return ! is_wp_error( $prv_response ) && ! strpos(wp_remote_retrieve_body( $prv_response ),'invalid-site-private-key');
@@ -572,8 +572,8 @@ class WP_reCaptcha {
 			if ( $wpcf7_options = get_option('wpcf7') ) {
 				if ( isset( $wpcf7_options['recaptcha'] ) && !self::instance()->has_api_key() ) {
 					foreach ( $wpcf7_options['recaptcha'] as $sitekey => $secretkey ) {
-						update_option('recaptcha_publickey',$sitekey);
-						update_option('recaptcha_privatekey',$secretkey);
+                        update_option('recaptcha_publickey', sanitize_text_field($sitekey));
+                        update_option('recaptcha_privatekey', sanitize_text_field($secretkey));
 						break;
 					}
 				}
